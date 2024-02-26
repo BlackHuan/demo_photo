@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:photo_manager/photo_manager.dart';
 
 void main() {
   runApp(const MyApp());
@@ -68,6 +69,23 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void photoManagerDebug() async {
+    final PermissionState ps = await PhotoManager.requestPermissionExtend();
+    if (ps.isAuth) {
+      // 已获取到权限
+      debugPrint("ps.isAuth");
+    } else if (ps.hasAccess) {
+      // 已获取到权限（哪怕只是有限的访问权限）。
+      // iOS Android 目前都已经有了部分权限的概念。
+      debugPrint("ps.hasAccess");
+    } else {
+      // 权限受限制（iOS）或者被拒绝，使用 `==` 能够更准确的判断是受限还是拒绝。
+      // 你可以使用 `PhotoManager.openSetting()` 打开系统设置页面进行进一步的逻辑定制。
+      debugPrint("else");
+      PhotoManager.openSetting();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -116,7 +134,8 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
+        // onPressed: _incrementCounter,
+        onPressed: photoManagerDebug,
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
